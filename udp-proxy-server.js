@@ -22,6 +22,17 @@ const CONFIG = {
     ]
 };
 
+// Railway环境检测和调试
+const isRailwayEnv = process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID;
+if (isRailwayEnv) {
+    console.log('🚂 Railway环境检测到');
+    console.log('环境变量:');
+    console.log('  PORT:', process.env.PORT);
+    console.log('  NODE_ENV:', process.env.NODE_ENV);
+    console.log('  RAILWAY_ENVIRONMENT:', process.env.RAILWAY_ENVIRONMENT);
+    console.log('  RAILWAY_PROJECT_ID:', process.env.RAILWAY_PROJECT_ID);
+}
+
 // 创建HTTP服务器（可选，用于状态页面）
 const server = http.createServer((req, res) => {
     // 设置CORS头 - 简化处理避免undefined值
@@ -43,7 +54,19 @@ const server = http.createServer((req, res) => {
             connections: wss.clients.size,
             uptime: process.uptime(),
             environment: process.env.NODE_ENV || 'development',
-            version: '1.0.0'
+            version: '1.0.0',
+            railway: {
+                detected: !!isRailwayEnv,
+                environment: process.env.RAILWAY_ENVIRONMENT,
+                projectId: process.env.RAILWAY_PROJECT_ID
+            },
+            activeConnections: Array.from(connections.values()).map(conn => ({
+                id: conn.id,
+                remoteAddress: conn.remoteAddress,
+                connectedAt: conn.connectedAt,
+                hasUDP: !!conn.udpSocket,
+                hasTCP: !!conn.tcpSocket
+            }))
         }));
     } else if (req.url === '/health') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -234,6 +257,7 @@ function handleUDPConnect(clientInfo, data) {
         
         // 监听UDP消息
         udpSocket.on('message', (msg, rinfo) => {
+            console.log(`UDP收到数据: ${msg.length} 字节，来自 ${rinfo.address}:${rinfo.port} (客户端: ${clientInfo.id})`);
             sendMessage(ws, {
                 type: 'udp_data',
                 data: Array.from(msg),
@@ -278,12 +302,35 @@ function handleUDPSend(clientInfo, data) {
     
     const { data: messageData, remoteAddress, remotePort } = data;
     
+    console.log(`客户端 ${clientInfo.id} 尝试发送UDP数据:`);
+    console.log(`  目标地址: ${remoteAddress}:${remotePort}`);
+    console.log(`  数据长度: ${messageData ? messageData.length : 0} 字节`);
+    
+    // 验证参数
+    if (!messageData || messageData.length === 0) {
+        const errorMsg = 'No data to send';
+        console.error(errorMsg);
+        sendError(ws, errorMsg);
+        return;
+    }
+    
+    if (!remoteAddress || !remotePort) {
+        const errorMsg = 'UDP send requires remoteAddress and remotePort';
+        console.error(errorMsg);
+        sendError(ws, errorMsg);
+        return;
+    }
+    
     try {
         const buffer = Buffer.from(messageData);
+        console.log(`  发送缓冲区创建成功，大小: ${buffer.length} 字节`);
+        
         udpSocket.send(buffer, remotePort, remoteAddress, (error) => {
             if (error) {
+                console.error(`UDP发送失败 (客户端 ${clientInfo.id}):`, error);
                 sendError(ws, `UDP send failed: ${error.message}`);
             } else {
+                console.log(`UDP发送成功 (客户端 ${clientInfo.id}): ${buffer.length} 字节到 ${remoteAddress}:${remotePort}`);
                 sendMessage(ws, {
                     type: 'udp_sent',
                     bytesSent: buffer.length,
@@ -294,6 +341,7 @@ function handleUDPSend(clientInfo, data) {
             }
         });
     } catch (error) {
+        console.error(`UDP发送异常 (客户端 ${clientInfo.id}):`, error);
         sendError(ws, `UDP send error: ${error.message}`);
     }
 }
