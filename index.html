@@ -293,6 +293,8 @@
                             type="button" role="tab" aria-controls="nav-options" aria-selected="false">系统选项</button>
                         <button class="nav-link" id="nav-code-tab" data-bs-toggle="tab" data-bs-target="#nav-code"
                             type="button" role="tab" aria-controls="nav-code" aria-selected="false">代码脚本</button>
+                        <button class="nav-link" id="nav-blockly-tab" data-bs-toggle="tab" data-bs-target="#nav-blockly"
+                            type="button" role="tab" aria-controls="nav-blockly" aria-selected="false">积木编程</button>
 
                     </div>
                 </nav>
@@ -387,12 +389,124 @@ setInterval(function(){
                                 </ul>
                             </div>
                             
+                            <!-- 积木转换按钮组 -->
+                            <div class="btn-group me-2" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-warning" id="code-to-blocks" title="将当前代码转换为积木">
+                                    <i class="bi bi-puzzle"></i> 转换积木
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="blocks-to-code" title="将积木转换为代码">
+                                    <i class="bi bi-code"></i> 生成代码
+                                </button>
+                            </div>
+                            
                             <button id="serial-code-run" class="btn btn-primary btn-sm float-end"><i
                                     class="bi bi-play"></i>
                                 运行</button>
                             <button id="api-code-run" class="btn btn-success btn-sm float-end me-2" style="display: none;"><i
                                     class="bi bi-lightning"></i>
                                 执行API</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 积木编程选项卡内容 -->
+                    <div class="tab-pane fade" id="nav-blockly" role="tabpanel" aria-labelledby="nav-blockly-tab" style="display: block !important; visibility: visible !important; opacity: 1 !important; height: auto !important; overflow: visible !important;">
+                        <div class="p-3">
+                            <h5>🧩 积木编程界面</h5>
+                            <div class="alert alert-success" role="alert">
+                                <h6>✅ 积木编程模块已成功加载！</h6>
+                                <p class="mb-0">拖拽左侧积木到右侧工作区进行可视化编程。</p>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0">🔧 积木工具箱</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <h6 class="text-success">串口操作</h6>
+                                                <div class="p-2 bg-success text-white rounded mb-1" style="cursor: pointer;" onclick="addBlock('打开串口', 'serial_open')">
+                                                    📡 打开串口
+                                                </div>
+                                                <div class="p-2 bg-success text-white rounded mb-1" style="cursor: pointer;" onclick="addBlock('关闭串口', 'serial_close')">
+                                                    📡 关闭串口
+                                                </div>
+                                                <div class="p-2 bg-success text-white rounded mb-1" style="cursor: pointer;" onclick="addBlock('串口发送', 'serial_send')">
+                                                    📡 串口发送
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <h6 class="text-info">UDP操作</h6>
+                                                <div class="p-2 bg-info text-white rounded mb-1" style="cursor: pointer;" onclick="addBlock('打开UDP', 'udp_open')">
+                                                    🌐 打开UDP
+                                                </div>
+                                                <div class="p-2 bg-info text-white rounded mb-1" style="cursor: pointer;" onclick="addBlock('关闭UDP', 'udp_close')">
+                                                    🌐 关闭UDP
+                                                </div>
+                                                <div class="p-2 bg-info text-white rounded mb-1" style="cursor: pointer;" onclick="addBlock('UDP发送', 'udp_send')">
+                                                    🌐 UDP发送
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <h6 class="text-warning">TCP操作</h6>
+                                                <div class="p-2 bg-warning text-dark rounded mb-1" style="cursor: pointer;" onclick="addBlock('打开TCP', 'tcp_open')">
+                                                    🔌 打开TCP
+                                                </div>
+                                                <div class="p-2 bg-warning text-dark rounded mb-1" style="cursor: pointer;" onclick="addBlock('关闭TCP', 'tcp_close')">
+                                                    🔌 关闭TCP
+                                                </div>
+                                                <div class="p-2 bg-warning text-dark rounded mb-1" style="cursor: pointer;" onclick="addBlock('TCP发送', 'tcp_send')">
+                                                    🔌 TCP发送
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <h6 class="text-secondary">控制流</h6>
+                                                <div class="p-2 bg-secondary text-white rounded mb-1" style="cursor: pointer;" onclick="addBlock('等待', 'wait')">
+                                                    ⏱️ 等待
+                                                </div>
+                                                <div class="p-2 bg-secondary text-white rounded mb-1" style="cursor: pointer;" onclick="addBlock('输出日志', 'log')">
+                                                    📝 输出日志
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-8">
+                                    <div class="card">
+                                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">🎯 积木工作区</h6>
+                                                <small class="text-muted">点击左侧积木添加到工作区</small>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-sm btn-primary" onclick="runBlocks()">
+                                                    <i class="bi bi-play"></i> 运行
+                                                </button>
+                                                <button class="btn btn-sm btn-secondary" onclick="clearWorkspace()">
+                                                    <i class="bi bi-trash"></i> 清空
+                                                </button>
+                                                <button class="btn btn-sm btn-info" onclick="generateCode()">
+                                                    <i class="bi bi-code"></i> 生成代码
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body" id="blockly-workspace" style="min-height: 300px; background-color: #f8f9fa; background-image: radial-gradient(circle, #dee2e6 1px, transparent 1px); background-size: 20px 20px;">
+                                            <p class="text-muted text-center">点击左侧积木开始编程...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <h6>生成的代码：</h6>
+                                <pre id="generated-code" class="bg-light p-3 rounded" style="min-height: 100px; max-height: 200px; overflow-y: auto;">// 生成的代码将显示在这里
+// 点击左侧积木开始编程，然后点击"生成代码"按钮查看结果</pre>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -444,6 +558,7 @@ setInterval(function(){
     <script src="js/udp.js"></script>
     <script src="js/tcp.js"></script>
     <script src="js/api-wrapper.js"></script>
+    <script src="js/blockly-functions.js"></script>
     <script src="js/common.js"></script>
 
 </body>

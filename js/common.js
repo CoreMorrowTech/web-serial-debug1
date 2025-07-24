@@ -1047,6 +1047,56 @@ console.log("✅ 综合测试完成!");`
 		}
 	}
 
+	// 积木转换按钮事件处理
+	document.addEventListener('DOMContentLoaded', () => {
+		// 代码转换为积木
+		const codeToBlocksBtn = document.getElementById('code-to-blocks');
+		if (codeToBlocksBtn) {
+			codeToBlocksBtn.addEventListener('click', () => {
+				if (window.blocklyProgramming) {
+					const code = editor.getValue();
+					if (!code.trim()) {
+						addLogErr('⚠️ 代码编辑器为空，无法转换为积木');
+						return;
+					}
+					
+					// 切换到积木编程选项卡
+					const blocklyTab = document.getElementById('nav-blockly-tab');
+					if (blocklyTab) {
+						blocklyTab.click();
+						addLogErr('🧩 正在将代码转换为积木...');
+						
+						// 简单的代码解析转换为积木
+						setTimeout(() => {
+							window.blocklyProgramming.parseCodeToBlocks(code);
+						}, 200);
+					}
+				} else {
+					addLogErr('❌ 积木编程模块未加载');
+				}
+			});
+		}
+
+		// 积木转换为代码
+		const blocksToCodeBtn = document.getElementById('blocks-to-code');
+		if (blocksToCodeBtn) {
+			blocksToCodeBtn.addEventListener('click', () => {
+				if (window.blocklyProgramming) {
+					const code = window.blocklyProgramming.generateCodeFromBlocks();
+					if (!code.trim()) {
+						addLogErr('⚠️ 积木工作区为空，无法生成代码');
+						return;
+					}
+					
+					editor.setValue(code);
+					addLogErr('✅ 积木已转换为代码');
+				} else {
+					addLogErr('❌ 积木编程模块未加载');
+				}
+			});
+		}
+	});
+
 	// 暴露函数给其他模块使用
 	window.addLog = addLog
 	window.addLogErr = addLogErr

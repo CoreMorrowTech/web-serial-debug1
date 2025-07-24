@@ -1,13 +1,16 @@
 :root {
 	--top-height: 63px;
 }
+
 html,
 body {
 	height: 100%;
 }
+
 body {
 	font-size: 0.875rem;
 }
+
 #main {
 	height: calc(100% - var(--top-height));
 }
@@ -17,15 +20,18 @@ body {
 	flex-direction: column;
 	height: 100%;
 }
+
 #serial-logs {
 	overflow-y: scroll;
 	white-space: pre-wrap;
 	word-break: break-all;
 }
+
 #serial-logs.ansi {
 	background-color: #000;
 	color: #fff;
 }
+
 #connection-options,
 #serial-tools {
 	position: relative;
@@ -35,6 +41,7 @@ body {
 #udp-config {
 	min-height: 400px;
 }
+
 .toggle-button {
 	align-items: center;
 	background: none;
@@ -48,6 +55,7 @@ body {
 	z-index: 1;
 	background-color: #f8f9fa;
 }
+
 .toggle-button:hover {
 	background: rgba(228, 231, 242, 0.4);
 }
@@ -55,22 +63,263 @@ body {
 #serial-tools {
 	height: 100%;
 }
+
 #nav-tabContent {
-	overflow: hidden;
+	overflow: auto;
+	height: 100%;
 }
+
 #serial-tools .collapse.show,
 #nav-quick-send.show {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 }
-#nav-code {
+
+#nav-code,
+#nav-blockly {
 	height: 100%;
 }
+
+/* 确保积木编程选项卡内容正确显示 */
+#nav-blockly.show {
+	height: auto !important;
+	display: block !important;
+	overflow: visible !important;
+}
+
+#nav-blockly {
+	height: auto !important;
+	overflow: visible !important;
+}
+
 #serial-code-editor .CodeMirror {
 	height: 100%;
 }
+
 .CodeMirror-readonly {
 	background-color: var(--bs-light-rgb);
 	cursor: not-allowed;
+}
+
+/* 积木编程样式 */
+.blockly-container {
+	flex: 1;
+	height: 100%;
+	min-height: 500px;
+	display: flex;
+	background-color: #f8f9fa;
+	overflow: hidden;
+	position: relative;
+	border: 1px solid #dee2e6;
+}
+
+/* 修复积木编程选项卡的显示问题 */
+#nav-blockly .blockly-container {
+	height: 500px !important;
+	min-height: 500px !important;
+	max-height: 70vh !important;
+	overflow: auto !important;
+	border: 1px solid #dee2e6 !important;
+	margin: 5px 0 !important;
+	background-color: #ffffff !important;
+}
+
+.blockly-toolbox {
+	width: 250px;
+	background-color: white;
+	border-right: 1px solid #dee2e6;
+	overflow-y: auto;
+	z-index: 10;
+	flex-shrink: 0;
+}
+
+.blockly-workspace {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.workspace-content {
+	flex: 1;
+	position: relative;
+	overflow: auto;
+	padding: 10px;
+	min-height: 400px;
+	background-image: radial-gradient(circle, #dee2e6 1px, transparent 1px);
+	background-size: 20px 20px;
+}
+
+.toolbox-category {
+	border-bottom: 1px solid #dee2e6;
+}
+
+.category-header {
+	cursor: pointer;
+	user-select: none;
+	transition: background-color 0.2s;
+}
+
+.category-header:hover {
+	background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.category-toggle {
+	transition: transform 0.2s;
+}
+
+.toolbox-block {
+	margin: 4px;
+	border-radius: 8px;
+	font-size: 12px;
+	transition: all 0.2s;
+	user-select: none;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toolbox-block:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.toolbox-block:active {
+	transform: translateY(0);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.workspace-block {
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	font-size: 13px;
+	user-select: none;
+	transition: all 0.2s;
+	backdrop-filter: blur(10px);
+}
+
+.workspace-block:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.workspace-block .form-control {
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	background-color: rgba(255, 255, 255, 0.9);
+	font-size: 12px;
+	padding: 2px 6px;
+	margin: 0 2px;
+}
+
+.workspace-block .btn-outline-light {
+	border-color: rgba(255, 255, 255, 0.5);
+	color: white;
+	font-size: 12px;
+	padding: 2px 6px;
+}
+
+.workspace-block .btn-outline-light:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+	border-color: white;
+}
+
+.input-placeholder {
+	background-color: rgba(255, 255, 255, 0.3);
+	border: 1px dashed rgba(255, 255, 255, 0.5);
+	border-radius: 4px;
+	padding: 2px 8px;
+	margin: 0 2px;
+	font-style: italic;
+}
+
+.blockly-toolbar {
+	padding: 8px;
+	background-color: #f8f9fa;
+	border-bottom: 1px solid #dee2e6;
+}
+
+.workspace-header {
+	background-color: #e9ecef !important;
+	border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* 拖拽时的样式 */
+.toolbox-block[draggable="true"]:active {
+	opacity: 0.7;
+	cursor: grabbing;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+	.blockly-container {
+		flex-direction: column;
+		height: auto;
+	}
+
+	.blockly-toolbox {
+		width: 100%;
+		height: 200px;
+		border-right: none;
+		border-bottom: 1px solid #dee2e6;
+	}
+
+	.blockly-workspace {
+		height: 300px;
+	}
+}
+
+/* 积木连接点样式 */
+.block-connector {
+	width: 20px;
+	height: 20px;
+	background-color: rgba(255, 255, 255, 0.3);
+	border: 2px solid rgba(255, 255, 255, 0.6);
+	border-radius: 50%;
+	position: absolute;
+	cursor: pointer;
+}
+
+.block-connector.top {
+	top: -10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.block-connector.bottom {
+	bottom: -10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.block-connector:hover {
+	background-color: rgba(255, 255, 255, 0.6);
+	border-color: white;
+}
+
+/* 积木动画效果 */
+@keyframes blockAppear {
+	from {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.workspace-block {
+	animation: blockAppear 0.3s ease-out;
+}
+
+/* 工具提示样式 */
+.block-tooltip {
+	position: absolute;
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 11px;
+	z-index: 1000;
+	white-space: nowrap;
+	pointer-events: none;
 }
