@@ -215,26 +215,78 @@
                 document.getElementById('serial-stop-bits').dispatchEvent(new Event('change'));
                 document.getElementById('serial-parity').dispatchEvent(new Event('change'));
                 
-                // 打开串口（需要用户手动选择端口）
-                addLogErr(`🔌 请手动选择串口 ${this.port} 并点击"打开串口"按钮`);
-                addLogErr(`📋 串口配置已设置: ${this.baudRate} baud, ${this.dataBits}${this.parity[0].toUpperCase()}${this.stopBits}`);
+                addLogErr(`🔌 正在连接串口 ${this.port}...`);
+                addLogErr(`📋 串口配置: ${this.baudRate} baud, ${this.dataBits}${this.parity[0].toUpperCase()}${this.stopBits}`);
                 
-                // 等待串口连接（这里需要用户手动操作）
-                return new Promise((resolve) => {
-                    const checkConnection = () => {
-                        if (window.serialPort && window.serialPort.readable) {
-                            this.connected = true;
-                            addLogErr(`✅ COM ${this.id} 连接成功`);
-                            resolve(true);
-                        } else {
-                            setTimeout(checkConnection, 1000);
-                        }
-                    };
-                    checkConnection();
-                });
+                // 直接连接到指定的串口
+                if (!navigator.serial) {
+                    throw new Error('浏览器不支持Web Serial API');
+                }
+                
+                // 获取所有可用的串口
+                const ports = await navigator.serial.getPorts();
+                let targetPort = null;
+                
+                // 尝试找到匹配的串口
+                for (const port of ports) {
+                    const info = port.getInfo();
+                    // 这里可以根据需要添加更多的匹配逻辑
+                    // 由于Web Serial API的限制，我们无法直接通过COM端口名匹配
+                    // 所以我们使用第一个可用的端口，或者让用户选择
+                    if (ports.length > 0) {
+                        targetPort = ports[0]; // 使用第一个已授权的端口
+                        break;
+                    }
+                }
+                
+                // 如果没有找到已授权的端口，请求用户选择
+                if (!targetPort) {
+                    addLogErr(`📌 未找到已授权的串口，请选择 ${this.port}`);
+                    targetPort = await navigator.serial.requestPort();
+                }
+                
+                // 配置串口参数
+                const serialOptions = {
+                    baudRate: this.baudRate,
+                    dataBits: this.dataBits,
+                    stopBits: this.stopBits,
+                    parity: this.parity
+                };
+                
+                // 打开串口
+                await targetPort.open(serialOptions);
+                
+                // 保存串口引用到全局变量（与现有代码兼容）
+                window.serialPort = targetPort;
+                
+                this.connected = true;
+                addLogErr(`✅ COM ${this.id} 连接成功`);
+                addLogErr(`🔗 串口 ${this.port} 已打开`);
+                
+                // 更新UI状态
+                const statusDiv = document.getElementById('serial-status');
+                if (statusDiv) {
+                    statusDiv.innerHTML = '<div class="alert alert-success" role="alert">串口已连接</div>';
+                }
+                
+                const button = document.getElementById('serial-open-or-close');
+                if (button) {
+                    button.textContent = '关闭串口';
+                    button.classList.remove('btn-primary');
+                    button.classList.add('btn-danger');
+                }
+                
+                return true;
                 
             } catch (error) {
                 addLogErr(`❌ COM ${this.id} 连接失败: ${error.message}`);
+                if (error.name === 'NotFoundError') {
+                    addLogErr(`💡 提示: 请确保 ${this.port} 设备已连接并且驱动程序已安装`);
+                } else if (error.name === 'SecurityError') {
+                    addLogErr(`🔒 安全错误: 请在HTTPS环境下使用，或者用户取消了端口选择`);
+                } else if (error.name === 'NetworkError') {
+                    addLogErr(`🔌 网络错误: 串口可能已被其他应用程序占用`);
+                }
                 return false;
             }
         }
@@ -272,16 +324,34 @@
             }
         }
         
-        Close() {
+        async Close() {
             try {
-                if (window.serialPort) {
-                    // 触发关闭串口按钮
-                    const closeButton = document.getElementById('serial-open-or-close');
-                    if (closeButton && closeButton.textContent.includes('关闭')) {
-                        closeButton.click();
-                    }
+                if (window.serialPort && this.connected) {
+                    addLogErr(`🔌 正在关闭串口 ${this.port}...`);
+                    
+                    // 直接关闭串口
+                    await window.serialPort.close();
+                    window.serialPort = null;
+                    
                     this.connected = false;
-                    addLogErr(`🔌 COM ${this.id} 已关闭`);
+                    addLogErr(`✅ COM ${this.id} 已关闭`);
+                    
+                    // 更新UI状态
+                    const statusDiv = document.getElementById('serial-status');
+                    if (statusDiv) {
+                        statusDiv.innerHTML = '<div class="alert alert-info" role="alert">未选择串口</div>';
+                    }
+                    
+                    const button = document.getElementById('serial-open-or-close');
+                    if (button) {
+                        button.textContent = '打开串口';
+                        button.classList.remove('btn-danger');
+                        button.classList.add('btn-primary');
+                    }
+                    
+                    return true;
+                } else {
+                    addLogErr(`⚠️ COM ${this.id} 未连接，无需关闭`);
                     return true;
                 }
             } catch (error) {
@@ -378,12 +448,24 @@ console.log("✅ TCP测试完成!");
 // 串口示例代码
 console.log("🚀 开始串口测试...");
 const com1 = new COM("COM3", 115200, 8, 1, "none");
-await com1.Open(); // 需要用户手动选择串口
-await new Promise(resolve => setTimeout(resolve, 3000)); // 等待3秒让用户选择串口
+
+// 直接连接到指定串口
+await com1.Open();
+
+// 发送文本数据
 await com1.SendData("Hello Serial Port!");
+
+// 发送数字数据
+await com1.SendData(67); // 发送字符 'C'
+
+// 发送字节数组
 await com1.SendData([0x41, 0x42, 0x43]); // "ABC"
-await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒
-com1.Close();
+
+// 等待一段时间
+await new Promise(resolve => setTimeout(resolve, 1000));
+
+// 关闭串口
+await com1.Close();
 console.log("✅ 串口测试完成!");
                     `;
                     break;

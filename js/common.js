@@ -393,7 +393,7 @@
 	const exampleButtons = {
 		'example-udp': () => `// UDP API示例代码
 console.log("🚀 开始UDP测试...");
-const udp1 = new UDP("127.0.0.1", 8080, "192.168.1.101", 8081);
+const udp1 = new UDP("192.168.1.101", 8080, "192.168.1.101", 8081);
 
 // 打开UDP连接
 await udp1.Open();
@@ -419,7 +419,7 @@ console.log("✅ UDP测试完成!");`,
 
 		'example-tcp': () => `// TCP API示例代码
 console.log("🚀 开始TCP测试...");
-const tcp1 = new TCP("127.0.0.1", 8080);
+const tcp1 = new TCP("192.168.1.101", 8080);
 
 // 打开TCP连接
 await tcp1.Open();
@@ -447,11 +447,8 @@ console.log("✅ TCP测试完成!");`,
 console.log("🚀 开始串口测试...");
 const com1 = new COM("COM3", 115200, 8, 1, "none");
 
-// 打开串口连接（需要用户手动选择）
+// 直接连接到指定串口
 await com1.Open();
-
-// 等待用户选择串口
-await new Promise(resolve => setTimeout(resolve, 5000));
 
 // 发送文本数据
 await com1.SendData("Hello Serial Port!");
@@ -465,8 +462,8 @@ await com1.SendData([0x41, 0x42, 0x43]); // "ABC"
 // 等待一段时间
 await new Promise(resolve => setTimeout(resolve, 1000));
 
-// 关闭连接
-com1.Close();
+// 关闭串口
+await com1.Close();
 console.log("✅ 串口测试完成!");`,
 
 		'example-comprehensive': () => `// 综合API示例代码
@@ -474,7 +471,7 @@ console.log("🚀 开始综合通信测试...");
 
 // 1. UDP通信测试
 console.log("📡 UDP通信测试");
-const udp1 = new UDP("127.0.0.1", 8080, "192.168.1.101", 8081);
+const udp1 = new UDP("192.168.1.101", 8080, "192.168.1.101", 8081);
 await udp1.Open();
 await new Promise(resolve => setTimeout(resolve, 2000));
 await udp1.SendData("UDP: Hello World!");
@@ -485,7 +482,7 @@ await new Promise(resolve => setTimeout(resolve, 2000));
 
 // 2. TCP通信测试
 console.log("🔌 TCP通信测试");
-const tcp1 = new TCP("127.0.0.1", 8080);
+const tcp1 = new TCP("192.168.1.101", 8080);
 await tcp1.Open();
 await new Promise(resolve => setTimeout(resolve, 2000));
 await tcp1.SendData("TCP: Hello World!");
@@ -494,13 +491,12 @@ tcp1.Close();
 // 等待间隔
 await new Promise(resolve => setTimeout(resolve, 2000));
 
-// 3. 串口通信测试（需要用户手动选择）
+// 3. 串口通信测试
 console.log("🔗 串口通信测试");
 const com1 = new COM("COM3", 115200, 8, 1, "none");
-// 注意：串口需要用户手动选择，这里只是演示API调用
-// await com1.Open();
-// await com1.SendData("COM: Hello World!");
-// com1.Close();
+await com1.Open();
+await com1.SendData("COM: Hello World!");
+await com1.Close();
 
 console.log("✅ 综合测试完成!");`
 	}
