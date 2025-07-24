@@ -314,11 +314,19 @@
                     setTimeout: setTimeout,
                     setInterval: setInterval,
                     clearTimeout: clearTimeout,
-                    clearInterval: clearInterval
+                    clearInterval: clearInterval,
+                    Promise: Promise
                 };
                 
+                // 将代码包装在async函数中
+                const wrappedCode = `
+                    return (async function() {
+                        ${code}
+                    })();
+                `;
+                
                 // 使用Function构造器创建安全的执行环境
-                const func = new Function(...Object.keys(context), code);
+                const func = new Function(...Object.keys(context), wrappedCode);
                 const result = await func(...Object.values(context));
                 
                 addLogErr('✅ 代码执行完成');
@@ -338,6 +346,7 @@
                 case 'udp':
                     exampleCode = `
 // UDP示例代码
+console.log("🚀 开始UDP测试...");
 const udp1 = new UDP("127.0.0.1", 8080, "192.168.1.101", 8081);
 await udp1.Open();
 await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒
@@ -345,12 +354,14 @@ await udp1.SendData("Hello UDP Server!");
 await udp1.SendData([0x48, 0x65, 0x6C, 0x6C, 0x6F]); // "Hello" 的十六进制
 await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒
 udp1.Close();
+console.log("✅ UDP测试完成!");
                     `;
                     break;
                     
                 case 'tcp':
                     exampleCode = `
 // TCP示例代码
+console.log("🚀 开始TCP测试...");
 const tcp1 = new TCP("127.0.0.1", 8080);
 await tcp1.Open();
 await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒
@@ -358,12 +369,14 @@ await tcp1.SendData("Hello TCP Server!");
 await tcp1.SendData(65); // 发送字符 'A'
 await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒
 tcp1.Close();
+console.log("✅ TCP测试完成!");
                     `;
                     break;
                     
                 case 'com':
                     exampleCode = `
 // 串口示例代码
+console.log("🚀 开始串口测试...");
 const com1 = new COM("COM3", 115200, 8, 1, "none");
 await com1.Open(); // 需要用户手动选择串口
 await new Promise(resolve => setTimeout(resolve, 3000)); // 等待3秒让用户选择串口
@@ -371,15 +384,17 @@ await com1.SendData("Hello Serial Port!");
 await com1.SendData([0x41, 0x42, 0x43]); // "ABC"
 await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒
 com1.Close();
+console.log("✅ 串口测试完成!");
                     `;
                     break;
                     
                 default:
                     exampleCode = `
 // 综合示例代码
-console.log("开始综合测试...");
+console.log("🚀 开始综合测试...");
 
 // 1. UDP测试
+console.log("📡 UDP通信测试");
 const udp1 = new UDP("127.0.0.1", 8080, "192.168.1.101", 8081);
 await udp1.Open();
 await udp1.SendData("UDP Test Message");
@@ -388,12 +403,13 @@ udp1.Close();
 await new Promise(resolve => setTimeout(resolve, 2000));
 
 // 2. TCP测试
+console.log("🔌 TCP通信测试");
 const tcp1 = new TCP("127.0.0.1", 8080);
 await tcp1.Open();
 await tcp1.SendData("TCP Test Message");
 tcp1.Close();
 
-console.log("综合测试完成!");
+console.log("✅ 综合测试完成!");
                     `;
             }
             

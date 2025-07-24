@@ -392,6 +392,7 @@
 	// API示例按钮事件
 	const exampleButtons = {
 		'example-udp': () => `// UDP API示例代码
+console.log("🚀 开始UDP测试...");
 const udp1 = new UDP("127.0.0.1", 8080, "192.168.1.101", 8081);
 
 // 打开UDP连接
@@ -413,9 +414,11 @@ await udp1.SendData([0x48, 0x65, 0x6C, 0x6C, 0x6F]); // "Hello"
 await new Promise(resolve => setTimeout(resolve, 1000));
 
 // 关闭连接
-udp1.Close();`,
+udp1.Close();
+console.log("✅ UDP测试完成!");`,
 
 		'example-tcp': () => `// TCP API示例代码
+console.log("🚀 开始TCP测试...");
 const tcp1 = new TCP("127.0.0.1", 8080);
 
 // 打开TCP连接
@@ -437,9 +440,11 @@ await tcp1.SendData([0x54, 0x43, 0x50]); // "TCP"
 await new Promise(resolve => setTimeout(resolve, 1000));
 
 // 关闭连接
-tcp1.Close();`,
+tcp1.Close();
+console.log("✅ TCP测试完成!");`,
 
 		'example-com': () => `// 串口 API示例代码
+console.log("🚀 开始串口测试...");
 const com1 = new COM("COM3", 115200, 8, 1, "none");
 
 // 打开串口连接（需要用户手动选择）
@@ -461,7 +466,8 @@ await com1.SendData([0x41, 0x42, 0x43]); // "ABC"
 await new Promise(resolve => setTimeout(resolve, 1000));
 
 // 关闭连接
-com1.Close();`,
+com1.Close();
+console.log("✅ 串口测试完成!");`,
 
 		'example-comprehensive': () => `// 综合API示例代码
 console.log("🚀 开始综合通信测试...");
