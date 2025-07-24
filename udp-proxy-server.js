@@ -7,6 +7,7 @@
 const WebSocket = require('ws');
 const dgram = require('dgram');
 const http = require('http');
+const net = require('net');
 
 // 配置
 const CONFIG = {
@@ -130,8 +131,10 @@ wss.on('connection', function connection(ws, req) {
         id: clientId,
         ws: ws,
         udpSocket: null,
+        tcpSocket: null,
         remoteAddress: req.socket.remoteAddress,
-        connectedAt: new Date()
+        connectedAt: new Date(),
+        serverHost: req.headers.host ? req.headers.host.split(':')[0] : null
     };
     
     connections.set(clientId, clientInfo);
@@ -192,6 +195,22 @@ function handleMessage(clientInfo, data) {
             
         case 'udp_disconnect':
             handleUDPDisconnect(clientInfo);
+            break;
+            
+        case 'udp_send_to_client':
+            handleUDPSendToClient(clientInfo, data);
+            break;
+            
+        case 'tcp_connect':
+            handleTCPConnect(clientInfo, data);
+            break;
+            
+        case 'tcp_send':
+            handleTCPSend(clientInfo, data);
+            break;
+            
+        case 'tcp_disconnect':
+            handleTCPDisconnect(clientInfo);
             break;
             
         case 'ping':
@@ -297,8 +316,28 @@ function handleUDPDisconnect(clientInfo) {
 // 清理资源
 function cleanup(clientInfo) {
     if (clientInfo.udpSocket) {
+        try {
+            const address = clientInfo.udpSocket.address();
+            console.log(`清理UDP连接: ${address.address}:${address.port} (客户端: ${clientInfo.id})`);
+        } catch (error) {
+            // Socket可能已经关闭，忽略错误
+        }
+        
+        clientInfo.udpSocket.removeAllListeners();
         clientInfo.udpSocket.close();
         clientInfo.udpSocket = null;
+    }
+    
+    if (clientInfo.tcpSocket) {
+        try {
+            console.log(`清理TCP连接: ${clientInfo.tcpSocket.remoteAddress}:${clientInfo.tcpSocket.remotePort} (客户端: ${clientInfo.id})`);
+        } catch (error) {
+            // Socket可能已经关闭，忽略错误
+        }
+        
+        clientInfo.tcpSocket.removeAllListeners();
+        clientInfo.tcpSocket.destroy();
+        clientInfo.tcpSocket = null;
     }
 }
 
@@ -371,3 +410,141 @@ process.on('uncaughtException', (error) => {
 process.on('unhandledRejection', (reason, promise) => {
     console.error('未处理的Promise拒绝:', reason);
 });
+
+// TCP处理函数
+
+// 处理TCP连接请求
+function handleTCPConnect(clientInfo, data) {
+    const { ws } = clientInfo;
+    const { remoteAddress, remotePort } = data;
+    
+    console.log(`客户端 ${clientInfo.id} 请求TCP连接: ${remoteAddress}:${remotePort}`);
+    
+    if (!remoteAddress || !remotePort) {
+        sendError(ws, 'TCP connect requires remoteAddress and remotePort');
+        return;
+    }
+    
+    try {
+        // 创建TCP socket
+        const tcpSocket = new net.Socket();
+        clientInfo.tcpSocket = tcpSocket;
+        
+        // 监听TCP数据
+        tcpSocket.on('data', (data) => {
+            console.log(`TCP收到数据: ${data.length} 字节，来自 ${tcpSocket.remoteAddress}:${tcpSocket.remotePort} (客户端: ${clientInfo.id})`);
+            sendMessage(ws, {
+                type: 'tcp_data',
+                data: Array.from(data),
+                remoteAddress: tcpSocket.remoteAddress,
+                remotePort: tcpSocket.remotePort,
+                timestamp: Date.now()
+            });
+        });
+        
+        // 监听TCP连接成功
+        tcpSocket.on('connect', () => {
+            console.log(`TCP连接建立成功: ${tcpSocket.remoteAddress}:${tcpSocket.remotePort} (客户端: ${clientInfo.id})`);
+            sendMessage(ws, {
+                type: 'tcp_connected',
+                remoteAddress: tcpSocket.remoteAddress,
+                remotePort: tcpSocket.remotePort,
+                localAddress: tcpSocket.localAddress,
+                localPort: tcpSocket.localPort,
+                timestamp: Date.now()
+            });
+        });
+        
+        // 监听TCP关闭
+        tcpSocket.on('close', (hadError) => {
+            console.log(`TCP连接关闭 (客户端: ${clientInfo.id}, 错误: ${hadError})`);
+            sendMessage(ws, {
+                type: 'tcp_disconnected',
+                hadError: hadError,
+                timestamp: Date.now()
+            });
+            clientInfo.tcpSocket = null;
+        });
+        
+        // 监听TCP错误
+        tcpSocket.on('error', (error) => {
+            console.error(`TCP错误 (客户端 ${clientInfo.id}):`, error);
+            sendError(ws, `TCP error: ${error.message}`);
+            
+            // 清理失败的socket
+            if (clientInfo.tcpSocket === tcpSocket) {
+                clientInfo.tcpSocket = null;
+            }
+        });
+        
+        // 连接到目标服务器
+        tcpSocket.connect(remotePort, remoteAddress);
+        
+    } catch (error) {
+        console.error(`TCP连接失败 (客户端 ${clientInfo.id}):`, error);
+        sendError(ws, `TCP connect failed: ${error.message}`);
+    }
+}
+
+// 处理TCP发送请求
+function handleTCPSend(clientInfo, data) {
+    const { ws, tcpSocket } = clientInfo;
+    
+    if (!tcpSocket) {
+        sendError(ws, 'TCP not connected');
+        return;
+    }
+    
+    const { data: messageData } = data;
+    
+    console.log(`客户端 ${clientInfo.id} 尝试发送TCP数据:`);
+    console.log(`  目标地址: ${tcpSocket.remoteAddress}:${tcpSocket.remotePort}`);
+    console.log(`  数据长度: ${messageData ? messageData.length : 0} 字节`);
+    
+    // 验证参数
+    if (!messageData || messageData.length === 0) {
+        const errorMsg = 'No data to send';
+        console.error(errorMsg);
+        sendError(ws, errorMsg);
+        return;
+    }
+    
+    try {
+        const buffer = Buffer.from(messageData);
+        console.log(`  发送缓冲区创建成功，大小: ${buffer.length} 字节`);
+        
+        tcpSocket.write(buffer, (error) => {
+            if (error) {
+                console.error(`TCP发送失败 (客户端 ${clientInfo.id}):`, error);
+                sendError(ws, `TCP send failed: ${error.message}`);
+            } else {
+                console.log(`TCP发送成功 (客户端 ${clientInfo.id}): ${buffer.length} 字节到 ${tcpSocket.remoteAddress}:${tcpSocket.remotePort}`);
+                sendMessage(ws, {
+                    type: 'tcp_sent',
+                    bytesSent: buffer.length,
+                    remoteAddress: tcpSocket.remoteAddress,
+                    remotePort: tcpSocket.remotePort,
+                    timestamp: Date.now()
+                });
+            }
+        });
+    } catch (error) {
+        console.error(`TCP发送异常 (客户端 ${clientInfo.id}):`, error);
+        sendError(ws, `TCP send error: ${error.message}`);
+    }
+}
+
+// 处理TCP断开请求
+function handleTCPDisconnect(clientInfo) {
+    const { ws } = clientInfo;
+    
+    if (clientInfo.tcpSocket) {
+        console.log(`主动关闭TCP连接 (客户端: ${clientInfo.id})`);
+        clientInfo.tcpSocket.end();
+        clientInfo.tcpSocket = null;
+        sendMessage(ws, {
+            type: 'tcp_disconnected',
+            timestamp: Date.now()
+        });
+    }
+}

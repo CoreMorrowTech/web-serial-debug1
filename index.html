@@ -58,6 +58,8 @@
                     <label class="btn btn-outline-primary" for="type-serial">串口</label>
                     <input type="radio" class="btn-check" name="connection-type" id="type-udp" value="udp">
                     <label class="btn btn-outline-primary" for="type-udp">UDP</label>
+                    <input type="radio" class="btn-check" name="connection-type" id="type-tcp" value="tcp">
+                    <label class="btn btn-outline-primary" for="type-tcp">TCP</label>
                 </div>
             </div>
             
@@ -176,6 +178,27 @@
 
                 <div id="udp-status" class="mt-2">
                     <div class="alert alert-secondary" role="alert">UDP未连接</div>
+                </div>
+            </div>
+            
+            <!-- TCP配置 -->
+            <div id="tcp-config" class="collapse p-2 float-start" style="display: none;">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">远程IP</span>
+                    <input type="text" id="tcp-remote-ip" class="form-control" placeholder="目标IP地址" value="127.0.0.1">
+                </div>
+                
+                <div class="input-group mb-3">
+                    <span class="input-group-text">远程端口</span>
+                    <input type="number" id="tcp-remote-port" class="form-control" placeholder="目标端口" value="8080" min="1" max="65535">
+                </div>
+
+                <div class="d-flex">
+                    <button class="btn btn-primary flex-grow-1" id="tcp-connect-or-disconnect">连接TCP</button>
+                </div>
+
+                <div id="tcp-status" class="mt-2">
+                    <div class="alert alert-secondary" role="alert">TCP未连接</div>
                 </div>
             </div>
             
@@ -401,6 +424,7 @@ setInterval(function(){
     </div>
     <script src="js/ansi_up.min.js"></script>
     <script src="js/udp.js"></script>
+    <script src="js/tcp.js"></script>
     <script src="js/common.js"></script>
 
 </body>

@@ -565,7 +565,12 @@
 		}
 		
 		// 检查当前连接类型
-		const connectionType = window.udpModule ? window.udpModule.getCurrentConnectionType() : 'serial';
+		let connectionType = 'serial';
+		if (window.udpModule && window.udpModule.getCurrentConnectionType) {
+			connectionType = window.udpModule.getCurrentConnectionType();
+		} else if (window.tcpModule && window.tcpModule.getCurrentConnectionType) {
+			connectionType = window.tcpModule.getCurrentConnectionType();
+		}
 		
 		if (connectionType === 'udp') {
 			// UDP发送
@@ -577,6 +582,17 @@
 				await sendHexUDP(content)
 			} else {
 				await sendTextUDP(content)
+			}
+		} else if (connectionType === 'tcp') {
+			// TCP发送
+			if (!window.tcpModule.isTCPConnected()) {
+				addLogErr('请先连接TCP')
+				return
+			}
+			if (toolOptions.hexSend) {
+				await sendHexTCP(content)
+			} else {
+				await sendTextTCP(content)
 			}
 		} else {
 			// 串口发送
@@ -630,6 +646,30 @@
 			data = new Uint8Array([...data, 0x0d, 0x0a])
 		}
 		await window.udpModule.sendUDPData(data)
+	}
+
+	//发送HEX到TCP
+	async function sendHexTCP(hex) {
+		const value = hex.replace(/\s+/g, '')
+		if (/^[0-9A-Fa-f]+$/.test(value) && value.length % 2 === 0) {
+			let data = []
+			for (let i = 0; i < value.length; i = i + 2) {
+				data.push(parseInt(value.substring(i, i + 2), 16))
+			}
+			await window.tcpModule.sendTCPData(Uint8Array.from(data))
+		} else {
+			addLogErr('HEX格式错误:' + hex)
+		}
+	}
+
+	//发送文本到TCP
+	async function sendTextTCP(text) {
+		const encoder = new TextEncoder()
+		let data = encoder.encode(text)
+		if (toolOptions.addCRLF) {
+			data = new Uint8Array([...data, 0x0d, 0x0a])
+		}
+		await window.tcpModule.sendTCPData(data)
 	}
 
 	//写串口数据
