@@ -344,6 +344,173 @@
 			}
 		}
 	})
+
+	// API代码执行按钮
+	const api_code_run = document.getElementById('api-code-run')
+	if (api_code_run) {
+		api_code_run.addEventListener('click', async (e) => {
+			if (worker) {
+				worker.terminate()
+				worker = null
+				api_code_run.innerHTML = '<i class="bi bi-lightning"></i>执行API'
+				editor.setOption('readOnly', false)
+				editor.getWrapperElement().classList.remove('CodeMirror-readonly')
+				return
+			}
+			
+			try {
+				editor.setOption('readOnly', 'nocursor')
+				editor.getWrapperElement().classList.add('CodeMirror-readonly')
+				localStorage.setItem('code', editor.getValue())
+				api_code_run.innerHTML = '<i class="bi bi-stop"></i>停止'
+				
+				// 使用API封装执行器执行代码
+				if (window.codeExecutor) {
+					await window.codeExecutor.executeCode(editor.getValue())
+				} else {
+					addLogErr('❌ API封装模块未加载')
+				}
+			} catch (error) {
+				addLogErr(`❌ API代码执行错误: ${error.message}`)
+			} finally {
+				api_code_run.innerHTML = '<i class="bi bi-lightning"></i>执行API'
+				editor.setOption('readOnly', false)
+				editor.getWrapperElement().classList.remove('CodeMirror-readonly')
+			}
+		})
+	}
+
+	// 显示API执行按钮
+	function showAPIButton() {
+		const apiButton = document.getElementById('api-code-run')
+		if (apiButton) {
+			apiButton.style.display = 'inline-block'
+			addLogErr('💡 已加载API示例代码，点击"执行API"按钮运行')
+		}
+	}
+
+	// API示例按钮事件
+	const exampleButtons = {
+		'example-udp': () => `// UDP API示例代码
+const udp1 = new UDP("127.0.0.1", 8080, "192.168.1.101", 8081);
+
+// 打开UDP连接
+await udp1.Open();
+
+// 等待连接建立
+await new Promise(resolve => setTimeout(resolve, 2000));
+
+// 发送文本数据
+await udp1.SendData("Hello UDP Server!");
+
+// 发送数字数据
+await udp1.SendData(65); // 发送字符 'A'
+
+// 发送十六进制数组
+await udp1.SendData([0x48, 0x65, 0x6C, 0x6C, 0x6F]); // "Hello"
+
+// 等待一段时间
+await new Promise(resolve => setTimeout(resolve, 1000));
+
+// 关闭连接
+udp1.Close();`,
+
+		'example-tcp': () => `// TCP API示例代码
+const tcp1 = new TCP("127.0.0.1", 8080);
+
+// 打开TCP连接
+await tcp1.Open();
+
+// 等待连接建立
+await new Promise(resolve => setTimeout(resolve, 2000));
+
+// 发送文本数据
+await tcp1.SendData("Hello TCP Server!");
+
+// 发送数字数据
+await tcp1.SendData(66); // 发送字符 'B'
+
+// 发送字节数组
+await tcp1.SendData([0x54, 0x43, 0x50]); // "TCP"
+
+// 等待一段时间
+await new Promise(resolve => setTimeout(resolve, 1000));
+
+// 关闭连接
+tcp1.Close();`,
+
+		'example-com': () => `// 串口 API示例代码
+const com1 = new COM("COM3", 115200, 8, 1, "none");
+
+// 打开串口连接（需要用户手动选择）
+await com1.Open();
+
+// 等待用户选择串口
+await new Promise(resolve => setTimeout(resolve, 5000));
+
+// 发送文本数据
+await com1.SendData("Hello Serial Port!");
+
+// 发送数字数据
+await com1.SendData(67); // 发送字符 'C'
+
+// 发送字节数组
+await com1.SendData([0x41, 0x42, 0x43]); // "ABC"
+
+// 等待一段时间
+await new Promise(resolve => setTimeout(resolve, 1000));
+
+// 关闭连接
+com1.Close();`,
+
+		'example-comprehensive': () => `// 综合API示例代码
+console.log("🚀 开始综合通信测试...");
+
+// 1. UDP通信测试
+console.log("📡 UDP通信测试");
+const udp1 = new UDP("127.0.0.1", 8080, "192.168.1.101", 8081);
+await udp1.Open();
+await new Promise(resolve => setTimeout(resolve, 2000));
+await udp1.SendData("UDP: Hello World!");
+udp1.Close();
+
+// 等待间隔
+await new Promise(resolve => setTimeout(resolve, 2000));
+
+// 2. TCP通信测试
+console.log("🔌 TCP通信测试");
+const tcp1 = new TCP("127.0.0.1", 8080);
+await tcp1.Open();
+await new Promise(resolve => setTimeout(resolve, 2000));
+await tcp1.SendData("TCP: Hello World!");
+tcp1.Close();
+
+// 等待间隔
+await new Promise(resolve => setTimeout(resolve, 2000));
+
+// 3. 串口通信测试（需要用户手动选择）
+console.log("🔗 串口通信测试");
+const com1 = new COM("COM3", 115200, 8, 1, "none");
+// 注意：串口需要用户手动选择，这里只是演示API调用
+// await com1.Open();
+// await com1.SendData("COM: Hello World!");
+// com1.Close();
+
+console.log("✅ 综合测试完成!");`
+	}
+
+	// 绑定示例按钮事件
+	Object.keys(exampleButtons).forEach(buttonId => {
+		const button = document.getElementById(buttonId)
+		if (button) {
+			button.addEventListener('click', (e) => {
+				e.preventDefault()
+				const exampleCode = exampleButtons[buttonId]()
+				editor.setValue(exampleCode)
+				showAPIButton()
+			})
+		}
+	})
 	//读取参数
 	let options = localStorage.getItem('serialOptions')
 	if (options) {

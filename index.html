@@ -372,9 +372,27 @@ setInterval(function(){
                             <input id='serial-code-select' type='file' class="d-none">
                             <button class="btn btn-sm btn-outline-secondary me-2" id="serial-code-load"><i
                                     class="bi bi-folder2-open"></i> 打开文件</button>
+                            
+                            <!-- API示例按钮组 -->
+                            <div class="btn-group me-2" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-code-square"></i> API示例
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" id="example-udp">UDP示例</a></li>
+                                    <li><a class="dropdown-item" href="#" id="example-tcp">TCP示例</a></li>
+                                    <li><a class="dropdown-item" href="#" id="example-com">串口示例</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" id="example-comprehensive">综合示例</a></li>
+                                </ul>
+                            </div>
+                            
                             <button id="serial-code-run" class="btn btn-primary btn-sm float-end"><i
                                     class="bi bi-play"></i>
                                 运行</button>
+                            <button id="api-code-run" class="btn btn-success btn-sm float-end me-2" style="display: none;"><i
+                                    class="bi bi-lightning"></i>
+                                执行API</button>
                         </div>
                     </div>
                 </div>
@@ -425,6 +443,7 @@ setInterval(function(){
     <script src="js/ansi_up.min.js"></script>
     <script src="js/udp.js"></script>
     <script src="js/tcp.js"></script>
+    <script src="js/api-wrapper.js"></script>
     <script src="js/common.js"></script>
 
 </body>
