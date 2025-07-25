@@ -19,6 +19,7 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
 
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/flowchart.css">
     <link rel="icon" href="imgs/logo.svg" type="image/svg+xml">
     <script>
         hideTop = function () {
@@ -342,6 +343,8 @@
                             type="button" role="tab" aria-controls="nav-code" aria-selected="false">代码脚本</button>
                         <button class="nav-link" id="nav-blockly-tab" data-bs-toggle="tab" data-bs-target="#nav-blockly"
                             type="button" role="tab" aria-controls="nav-blockly" aria-selected="false">积木编程</button>
+                        <button class="nav-link" id="nav-flowchart-tab" data-bs-toggle="tab" data-bs-target="#nav-flowchart"
+                            type="button" role="tab" aria-controls="nav-flowchart" aria-selected="false">流程图</button>
 
                     </div>
                 </nav>
@@ -582,6 +585,78 @@ setInterval(function(){
                             </div>
                         </div>
                     </div>
+
+                    <!-- 流程图选项卡内容 -->
+                    <div class="tab-pane fade" id="nav-flowchart" role="tabpanel" aria-labelledby="nav-flowchart-tab">
+                        <div class="p-2">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="card">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0">🎨 节点面板</h6>
+                                        </div>
+                                        <div class="card-body p-2" id="flowchart-node-palette">
+                                            <!-- 节点面板内容将由JavaScript动态生成 -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-2" id="flowchart-properties">
+                                        <!-- 属性面板内容将由JavaScript动态生成 -->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-9">
+                                    <div class="card">
+                                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">🔗 流程图编辑器</h6>
+                                                <small class="text-muted">拖拽节点创建流程，连接节点定义执行顺序</small>
+                                            </div>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="flowchart-container" id="flowchart-container">
+                                                <!-- 流程图画布将由JavaScript动态生成 -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">📋 使用说明</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6>基本操作：</h6>
+                                                <ul class="small">
+                                                    <li>点击左侧节点面板中的节点添加到画布</li>
+                                                    <li>拖拽节点可以移动位置</li>
+                                                    <li>点击节点的连接点开始连线</li>
+                                                    <li>点击另一个节点的连接点完成连线</li>
+                                                    <li>选择节点查看和编辑属性</li>
+                                                    <li>按Delete键删除选中的节点</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>执行流程：</h6>
+                                                <ul class="small">
+                                                    <li>从开始节点开始执行</li>
+                                                    <li>按照连线顺序依次执行节点</li>
+                                                    <li>支持串口、UDP、TCP操作</li>
+                                                    <li>支持延时、条件判断等控制流</li>
+                                                    <li>可以保存和加载流程图</li>
+                                                    <li>实时显示执行状态和进度</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -632,8 +707,26 @@ setInterval(function(){
     <script src="js/tcp.js"></script>
     <script src="js/api-wrapper.js"></script>
     <script src="js/blockly-functions.js"></script>
+    <script src="js/flowchart.js"></script>
     <script src="js/resize-panels.js"></script>
     <script src="js/common.js"></script>
+    
+    <script>
+        // 初始化流程图编辑器
+        document.addEventListener('DOMContentLoaded', function() {
+            // 当流程图选项卡被激活时初始化编辑器
+            const flowchartTab = document.getElementById('nav-flowchart-tab');
+            if (flowchartTab) {
+                flowchartTab.addEventListener('shown.bs.tab', function() {
+                    if (!window.flowchartEditor) {
+                        setTimeout(() => {
+                            initFlowchartEditor();
+                        }, 100);
+                    }
+                });
+            }
+        });
+    </script>
 
 </body>
 

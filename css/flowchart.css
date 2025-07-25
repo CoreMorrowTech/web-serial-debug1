@@ -1,0 +1,279 @@
+/* 流程图样式 */
+.flowchart-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    user-select: none;
+}
+
+.flowchart-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle, #dee2e6 1px, transparent 1px);
+    background-size: 20px 20px;
+    cursor: grab;
+}
+
+.flowchart-canvas.dragging {
+    cursor: grabbing;
+}
+
+/* 节点样式 */
+.flowchart-node {
+    position: absolute;
+    min-width: 120px;
+    min-height: 60px;
+    background: white;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: move;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    text-align: center;
+}
+
+.flowchart-node.selected {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3);
+}
+
+.flowchart-node.executing {
+    border-color: #28a745;
+    background: #d4edda;
+    animation: pulse 1s infinite;
+}
+
+.flowchart-node.error {
+    border-color: #dc3545;
+    background: #f8d7da;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* 节点类型样式 */
+.node-serial { border-color: #28a745; background: #d4edda; }
+.node-udp { border-color: #17a2b8; background: #d1ecf1; }
+.node-tcp { border-color: #ffc107; background: #fff3cd; }
+.node-control { border-color: #6c757d; background: #e2e3e5; }
+.node-start { border-color: #007bff; background: #cce5ff; border-radius: 50%; }
+.node-end { border-color: #dc3545; background: #f8d7da; border-radius: 50%; }
+
+/* 连接点样式 */
+.connection-point {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #007bff;
+    border: 2px solid white;
+    border-radius: 50%;
+    cursor: crosshair;
+    z-index: 20;
+}
+
+.connection-point.input {
+    left: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.connection-point.output {
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.connection-point:hover {
+    background: #ffc107;
+    transform: scale(1.2) translateY(-50%);
+}
+
+.connection-point.output:hover {
+    transform: scale(1.2) translateY(-50%);
+}
+
+/* 连线样式 */
+.flowchart-connection {
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.connection-line {
+    stroke: #007bff;
+    stroke-width: 2;
+    fill: none;
+    marker-end: url(#arrowhead);
+}
+
+.connection-line.selected {
+    stroke: #ffc107;
+    stroke-width: 3;
+}
+
+.connection-line.executing {
+    stroke: #28a745;
+    stroke-width: 3;
+    animation: flow 2s linear infinite;
+}
+
+@keyframes flow {
+    0% { stroke-dasharray: 5 5; stroke-dashoffset: 0; }
+    100% { stroke-dasharray: 5 5; stroke-dashoffset: 10; }
+}
+
+/* 工具栏样式 */
+.flowchart-toolbar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 30;
+    display: flex;
+    gap: 5px;
+}
+
+.flowchart-toolbar .btn {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+/* 节点面板样式 */
+.node-palette {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.node-palette h6 {
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.palette-node {
+    display: block;
+    width: 100%;
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.palette-node:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+}
+
+/* 属性面板样式 */
+.node-properties {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.node-properties h6 {
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.property-group {
+    margin-bottom: 10px;
+}
+
+.property-group label {
+    display: block;
+    font-size: 11px;
+    color: #6c757d;
+    margin-bottom: 2px;
+}
+
+.property-group input,
+.property-group select {
+    width: 100%;
+    padding: 4px 6px;
+    font-size: 11px;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+}
+
+/* 执行状态指示器 */
+.execution-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 30;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.status-running {
+    color: #28a745;
+}
+
+.status-stopped {
+    color: #6c757d;
+}
+
+.status-error {
+    color: #dc3545;
+}
+
+/* 右键菜单样式 */
+.context-menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 120px;
+}
+
+.context-menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.context-menu-item:hover {
+    background: #f8f9fa;
+}
+
+.context-menu-item:last-child {
+    border-bottom: none;
+}
+
+.context-menu-separator {
+    height: 1px;
+    background: #dee2e6;
+    margin: 4px 0;
+}
