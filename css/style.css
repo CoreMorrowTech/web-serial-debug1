@@ -37,7 +37,8 @@ body {
 	position: relative;
 	overflow: auto;
 	transition: width 0.2s ease, min-width 0.2s ease;
-	flex-shrink: 0; /* 防止面板被压缩 */
+	flex-shrink: 0;
+	/* 防止面板被压缩 */
 }
 
 /* 左侧面板折叠状态 */
@@ -182,16 +183,23 @@ body.resizing * {
 	bottom: 0;
 	left: -2px;
 	right: -2px;
-	background: linear-gradient(90deg, 
-		transparent 0%, 
-		rgba(0, 123, 255, 0.3) 50%, 
-		transparent 100%);
+	background: linear-gradient(90deg,
+			transparent 0%,
+			rgba(0, 123, 255, 0.3) 50%,
+			transparent 100%);
 	animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
-	0%, 100% { opacity: 0.3; }
-	50% { opacity: 0.7; }
+
+	0%,
+	100% {
+		opacity: 0.3;
+	}
+
+	50% {
+		opacity: 0.7;
+	}
 }
 
 /* 面板控制工具栏样式增强 */
@@ -214,33 +222,112 @@ body.resizing * {
 	height: 100%;
 }
 
+/* 右侧工具栏选项卡容器 */
 #nav-tabContent {
 	overflow: auto;
-	height: 100%;
+	height: calc(100% - 50px);
+	/* 减去选项卡标题的高度 */
+	position: relative;
 }
 
-#serial-tools .collapse.show,
-#nav-quick-send.show {
+/* 确保所有选项卡面板都能独立占满容器 */
+.tab-pane {
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+	padding: 8px;
+}
+
+/* 只有激活的选项卡才显示 */
+.tab-pane.active {
+	display: block !important;
+	opacity: 1;
+	z-index: 1;
+}
+
+.tab-pane:not(.active) {
+	display: none !important;
+}
+
+/* 快捷发送选项卡 */
+#nav-quick-send {
+	display: flex;
+	flex-direction: column;
+}
+
+#nav-quick-send .flex-grow-1 {
+	flex: 1;
+	min-height: 0;
+}
+
+/* 系统选项选项卡 */
+#nav-options {
+	padding: 16px;
+}
+
+/* 代码脚本选项卡 */
+#nav-code {
+	display: flex;
+	flex-direction: column;
+	padding: 8px;
+}
+
+#nav-code .flex-grow-1 {
+	flex: 1;
+	min-height: 200px;
+}
+
+/* 积木编程选项卡 */
+#nav-blockly {
+	padding: 8px;
+	overflow-y: auto;
+}
+
+/* 确保积木编程选项卡内容正确显示 */
+#nav-blockly.show {
+	height: 100% !important;
+	display: block !important;
+	overflow: auto !important;
+}
+
+#nav-blockly {
+	height: 100% !important;
+	overflow: auto !important;
+}
+
+/* 右侧工具栏整体布局 */
+#serial-tools .collapse {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 }
 
-#nav-code,
-#nav-blockly {
-	height: 100%;
+/* 选项卡导航栏 */
+#nav-tab {
+	flex-shrink: 0;
+	border-bottom: 1px solid #dee2e6;
 }
 
-/* 确保积木编程选项卡内容正确显示 */
-#nav-blockly.show {
-	height: auto !important;
-	display: block !important;
-	overflow: visible !important;
+/* 选项卡内容区域布局优化 */
+#nav-tabContent .tab-pane {
+	background-color: #ffffff;
+	border-radius: 0 0 4px 4px;
 }
 
-#nav-blockly {
-	height: auto !important;
-	overflow: visible !important;
+/* 快捷发送选项卡内容滚动 */
+#serial-quick-send-content {
+	max-height: calc(100vh - 300px);
+	overflow-y: auto;
+}
+
+/* 代码编辑器容器高度调整 */
+#serial-code-editor {
+	height: calc(100% - 60px);
+	min-height: 300px;
 }
 
 #serial-code-editor .CodeMirror {

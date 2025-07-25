@@ -1026,6 +1026,70 @@ console.log("✅ 综合测试完成!");`
 		return `${hour}:${minute}:${second}.${millisecond}`
 	}
 
+	// 初始化选项卡功能
+	function initTabSystem() {
+		// 获取所有选项卡按钮和面板
+		const tabButtons = document.querySelectorAll('#nav-tab .nav-link')
+		const tabPanes = document.querySelectorAll('#nav-tabContent .tab-pane')
+		
+		// 为每个选项卡按钮添加点击事件
+		tabButtons.forEach(button => {
+			button.addEventListener('click', function(e) {
+				e.preventDefault()
+				
+				// 移除所有按钮的active状态
+				tabButtons.forEach(btn => {
+					btn.classList.remove('active')
+					btn.setAttribute('aria-selected', 'false')
+				})
+				
+				// 隐藏所有选项卡面板
+				tabPanes.forEach(pane => {
+					pane.classList.remove('show', 'active')
+				})
+				
+				// 激活当前按钮
+				this.classList.add('active')
+				this.setAttribute('aria-selected', 'true')
+				
+				// 显示对应的选项卡面板
+				const targetId = this.getAttribute('data-bs-target')
+				const targetPane = document.querySelector(targetId)
+				if (targetPane) {
+					targetPane.classList.add('show', 'active')
+					
+					// 如果是代码编辑器选项卡，刷新编辑器
+					if (targetId === '#nav-code' && window.editor) {
+						setTimeout(() => {
+							window.editor.refresh()
+						}, 100)
+					}
+				}
+			})
+		})
+		
+		// 确保默认选项卡正确显示
+		const activeButton = document.querySelector('#nav-tab .nav-link.active')
+		if (activeButton) {
+			const targetId = activeButton.getAttribute('data-bs-target')
+			const targetPane = document.querySelector(targetId)
+			if (targetPane) {
+				targetPane.classList.add('show', 'active')
+			}
+		}
+	}
+	
+	// 将editor变量设为全局变量，以便选项卡切换时能访问
+	window.editor = editor
+	
+	// 页面加载完成后初始化选项卡系统
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initTabSystem)
+	} else {
+		// 如果DOM已经加载完成，直接初始化
+		initTabSystem()
+	}
+	
 	//左右折叠
 	document.querySelectorAll('.toggle-button').forEach((element) => {
 		element.addEventListener('click', (e) => {
