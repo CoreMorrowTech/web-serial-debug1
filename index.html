@@ -48,6 +48,47 @@
         </div>
     </header>
 
+    <!-- 面板控制工具栏 -->
+    <div id="panel-controls" class="d-none position-fixed" style="top: 70px; right: 10px; z-index: 1000;">
+        <div class="card shadow-sm">
+            <div class="card-header py-1 px-2">
+                <small class="text-muted">面板控制</small>
+                <button type="button" class="btn btn-sm btn-outline-secondary float-end" id="toggle-panel-controls" title="隐藏控制面板">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="card-body p-2">
+                <div class="btn-group-vertical btn-group-sm w-100" role="group">
+                    <button type="button" class="btn btn-outline-primary mb-1" id="reset-panels" title="重置面板宽度 (Ctrl+Shift+R)">
+                        <i class="bi bi-arrow-clockwise me-1"></i>重置宽度
+                    </button>
+                    <button type="button" class="btn btn-outline-success mb-1" id="auto-fit-left" title="自动调整左侧面板 (Ctrl+Shift+1)">
+                        <i class="bi bi-arrow-left-square me-1"></i>左侧自适应
+                    </button>
+                    <button type="button" class="btn btn-outline-info mb-1" id="auto-fit-right" title="自动调整右侧面板 (Ctrl+Shift+2)">
+                        <i class="bi bi-arrow-right-square me-1"></i>右侧自适应
+                    </button>
+                    <button type="button" class="btn btn-outline-warning" id="balance-panels" title="平衡面板宽度 (Ctrl+Shift+B)">
+                        <i class="bi bi-distribute-horizontal me-1"></i>平衡宽度
+                    </button>
+                </div>
+                <hr class="my-2">
+                <div class="row g-1">
+                    <div class="col-6">
+                        <small class="text-muted d-block">左侧宽度</small>
+                        <input type="range" class="form-range form-range-sm" id="left-width-slider" min="50" max="800" step="10">
+                        <small class="text-center d-block" id="left-width-display">300px</small>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">右侧宽度</small>
+                        <input type="range" class="form-range form-range-sm" id="right-width-slider" min="50" max="800" step="10">
+                        <small class="text-center d-block" id="right-width-display">428px</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="main" class="d-flex">
         <!--左侧连接配置-->
         <div id="connection-options" class="col-auto m-0 bg-light sidebar">

@@ -36,7 +36,8 @@ body {
 #serial-tools {
 	position: relative;
 	overflow: auto;
-	transition: width 0.3s ease, min-width 0.3s ease;
+	transition: width 0.2s ease, min-width 0.2s ease;
+	flex-shrink: 0; /* 防止面板被压缩 */
 }
 
 /* 左侧面板折叠状态 */
@@ -91,29 +92,34 @@ body {
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	width: 4px;
+	width: 6px;
 	background-color: transparent;
 	cursor: col-resize;
 	z-index: 10;
-	transition: background-color 0.2s ease;
+	transition: all 0.2s ease;
+	border-radius: 0 3px 3px 0;
 }
 
 /* 左侧面板的拖拽手柄在右边 */
 #connection-options .resize-handle {
-	right: 0;
+	right: -3px;
+	border-radius: 3px 0 0 3px;
 }
 
 /* 右侧面板的拖拽手柄在左边 */
 #serial-tools .resize-handle {
-	left: 0;
+	left: -3px;
+	border-radius: 0 3px 3px 0;
 }
 
 .resize-handle:hover {
-	background-color: #007bff;
+	background-color: rgba(0, 123, 255, 0.3);
+	box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
 }
 
 .resize-handle.active {
-	background-color: #0056b3;
+	background-color: rgba(0, 86, 179, 0.5);
+	box-shadow: 0 0 12px rgba(0, 86, 179, 0.6);
 }
 
 /* 拖拽时的全局样式 */
@@ -124,6 +130,84 @@ body.resizing {
 
 body.resizing * {
 	cursor: col-resize !important;
+}
+
+/* 面板宽度调整时的平滑过渡 */
+#connection-options:not(.resizing),
+#serial-tools:not(.resizing) {
+	transition: width 0.2s ease, min-width 0.2s ease, max-width 0.2s ease;
+}
+
+/* 确保中间区域能够自适应 */
+#log-main {
+	flex: 1;
+	min-width: 300px;
+	overflow: hidden;
+}
+
+/* 面板最小宽度指示器 */
+#connection-options[style*="width: 50px"],
+#serial-tools[style*="width: 50px"] {
+	border: 2px dashed #ffc107;
+	background-color: rgba(255, 193, 7, 0.1);
+}
+
+/* 面板最大宽度指示器 */
+#connection-options[data-at-max="true"],
+#serial-tools[data-at-max="true"] {
+	border: 2px dashed #dc3545;
+	background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* 宽度调整时的实时提示 */
+.width-tooltip {
+	position: fixed;
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	z-index: 1001;
+	pointer-events: none;
+	white-space: nowrap;
+	transform: translate(-50%, -100%);
+	margin-top: -10px;
+}
+
+/* 拖拽时的视觉反馈 */
+.resize-handle.active::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: -2px;
+	right: -2px;
+	background: linear-gradient(90deg, 
+		transparent 0%, 
+		rgba(0, 123, 255, 0.3) 50%, 
+		transparent 100%);
+	animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+	0%, 100% { opacity: 0.3; }
+	50% { opacity: 0.7; }
+}
+
+/* 面板控制工具栏样式增强 */
+#panel-controls .card {
+	min-width: 200px;
+	backdrop-filter: blur(10px);
+	background-color: rgba(255, 255, 255, 0.95);
+}
+
+#panel-controls .form-range {
+	height: 4px;
+}
+
+#panel-controls .form-range::-webkit-slider-thumb {
+	height: 12px;
+	width: 12px;
 }
 
 #serial-tools {

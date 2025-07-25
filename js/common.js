@@ -1108,7 +1108,156 @@ console.log("✅ 综合测试完成!");`
 	// 页面加载完成后恢复面板状态
 	document.addEventListener('DOMContentLoaded', () => {
 		setTimeout(restorePanelStates, 100) // 延迟执行确保DOM完全加载
+		initPanelControls() // 初始化面板控制工具栏
 	})
+	
+	// 初始化面板控制工具栏
+	function initPanelControls() {
+		const panelControls = document.getElementById('panel-controls')
+		const resetPanelsBtn = document.getElementById('reset-panels')
+		const autoFitLeftBtn = document.getElementById('auto-fit-left')
+		const autoFitRightBtn = document.getElementById('auto-fit-right')
+		const balancePanelsBtn = document.getElementById('balance-panels')
+		const toggleControlsBtn = document.getElementById('toggle-panel-controls')
+		const leftWidthSlider = document.getElementById('left-width-slider')
+		const rightWidthSlider = document.getElementById('right-width-slider')
+		const leftWidthDisplay = document.getElementById('left-width-display')
+		const rightWidthDisplay = document.getElementById('right-width-display')
+		
+		// 更新滑块和显示值
+		function updateSliders() {
+			if (window.panelResizer) {
+				const leftWidth = window.panelResizer.getPanelWidth('connection-options')
+				const rightWidth = window.panelResizer.getPanelWidth('serial-tools')
+				
+				if (leftWidthSlider) {
+					leftWidthSlider.value = leftWidth
+					leftWidthSlider.max = window.panelResizer.containerWidth * 0.8
+				}
+				if (rightWidthSlider) {
+					rightWidthSlider.value = rightWidth
+					rightWidthSlider.max = window.panelResizer.containerWidth * 0.8
+				}
+				if (leftWidthDisplay) leftWidthDisplay.textContent = leftWidth + 'px'
+				if (rightWidthDisplay) rightWidthDisplay.textContent = rightWidth + 'px'
+			}
+		}
+		
+		// 显示面板控制工具栏的快捷键 (Ctrl + Shift + P)
+		document.addEventListener('keydown', (e) => {
+			if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+				e.preventDefault()
+				panelControls.classList.toggle('d-none')
+				if (!panelControls.classList.contains('d-none')) {
+					updateSliders()
+				}
+			}
+			
+			// 平衡面板快捷键 (Ctrl + Shift + B)
+			if (e.ctrlKey && e.shiftKey && e.key === 'B') {
+				e.preventDefault()
+				balancePanels()
+			}
+		})
+		
+		// 平衡面板功能
+		function balancePanels() {
+			if (window.panelResizer) {
+				const containerWidth = window.panelResizer.containerWidth
+				const minMainWidth = 300
+				const availableWidth = containerWidth - minMainWidth
+				const balancedWidth = Math.max(50, availableWidth / 2)
+				
+				window.panelResizer.setPanelToWidth('connection-options', balancedWidth)
+				window.panelResizer.setPanelToWidth('serial-tools', balancedWidth)
+				updateSliders()
+				showMsg('面板宽度已平衡')
+			}
+		}
+		
+		// 重置面板按钮
+		if (resetPanelsBtn) {
+			resetPanelsBtn.addEventListener('click', () => {
+				if (window.panelResizer) {
+					window.panelResizer.resetToDefault()
+					updateSliders()
+					showMsg('面板宽度已重置为默认值')
+				}
+			})
+		}
+		
+		// 自动调整左侧面板按钮
+		if (autoFitLeftBtn) {
+			autoFitLeftBtn.addEventListener('click', () => {
+				if (window.panelResizer) {
+					window.panelResizer.autoFitContent('connection-options')
+					updateSliders()
+					showMsg('左侧面板宽度已自动调整')
+				}
+			})
+		}
+		
+		// 自动调整右侧面板按钮
+		if (autoFitRightBtn) {
+			autoFitRightBtn.addEventListener('click', () => {
+				if (window.panelResizer) {
+					window.panelResizer.autoFitContent('serial-tools')
+					updateSliders()
+					showMsg('右侧面板宽度已自动调整')
+				}
+			})
+		}
+		
+		// 平衡面板按钮
+		if (balancePanelsBtn) {
+			balancePanelsBtn.addEventListener('click', balancePanels)
+		}
+		
+		// 隐藏控制面板按钮
+		if (toggleControlsBtn) {
+			toggleControlsBtn.addEventListener('click', () => {
+				panelControls.classList.add('d-none')
+			})
+		}
+		
+		// 左侧宽度滑块
+		if (leftWidthSlider) {
+			leftWidthSlider.addEventListener('input', (e) => {
+				const width = parseInt(e.target.value)
+				if (window.panelResizer) {
+					window.panelResizer.setPanelToWidth('connection-options', width)
+					leftWidthDisplay.textContent = width + 'px'
+				}
+			})
+		}
+		
+		// 右侧宽度滑块
+		if (rightWidthSlider) {
+			rightWidthSlider.addEventListener('input', (e) => {
+				const width = parseInt(e.target.value)
+				if (window.panelResizer) {
+					window.panelResizer.setPanelToWidth('serial-tools', width)
+					rightWidthDisplay.textContent = width + 'px'
+				}
+			})
+		}
+		
+		// 双击拖拽手柄显示控制面板
+		document.querySelectorAll('.resize-handle').forEach(handle => {
+			handle.addEventListener('dblclick', () => {
+				panelControls.classList.remove('d-none')
+				updateSliders()
+			})
+		})
+		
+		// 监听窗口大小变化，更新滑块最大值
+		window.addEventListener('resize', () => {
+			setTimeout(updateSliders, 100)
+		})
+		
+		// 初始化滑块值
+		setTimeout(updateSliders, 200)
+	}
 
 	//设置名称
 	const modalNewName = new bootstrap.Modal('#model-change-name')
