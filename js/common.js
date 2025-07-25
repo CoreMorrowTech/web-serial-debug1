@@ -884,6 +884,12 @@ console.log("✅ 综合测试完成!");`
 				worker.postMessage({ type: 'uart_receive', data: serialData })
 			}
 			addLog(serialData, true)
+			
+			// 更新串口接收积木的数据显示
+			if (window.blocklyReceiveDisplay) {
+				window.blocklyReceiveDisplay.updateReceiveBlockDisplay('serial_receive', serialData);
+			}
+			
 			serialData = []
 			return
 		}
@@ -895,6 +901,12 @@ console.log("✅ 综合测试完成!");`
 			}
 			//超时发出
 			addLog(serialData, true)
+			
+			// 更新串口接收积木的数据显示
+			if (window.blocklyReceiveDisplay) {
+				window.blocklyReceiveDisplay.updateReceiveBlockDisplay('serial_receive', serialData);
+			}
+			
 			serialData = []
 		}, toolOptions.timeOut)
 	}

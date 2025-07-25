@@ -273,6 +273,12 @@
             if (window.addLog) {
                 window.addLog(Array.from(dataArray), true);
             }
+            
+            // 更新UDP接收积木的数据显示
+            if (window.blocklyReceiveDisplay) {
+                const remoteInfo = `from ${remoteAddress}:${remotePort}`;
+                window.blocklyReceiveDisplay.updateReceiveBlockDisplay('udp_receive', Array.from(dataArray), remoteInfo);
+            }
         }
     }
 
