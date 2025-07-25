@@ -36,6 +36,29 @@ body {
 #serial-tools {
 	position: relative;
 	overflow: auto;
+	transition: width 0.3s ease, min-width 0.3s ease;
+}
+
+/* 左侧面板折叠状态 */
+#connection-options.collapsed {
+	width: 20px !important;
+	min-width: 20px !important;
+	max-width: 20px !important;
+}
+
+#connection-options.collapsed .collapse {
+	display: none !important;
+}
+
+/* 右侧面板折叠状态 */
+#serial-tools.collapsed {
+	width: 20px !important;
+	min-width: 20px !important;
+	max-width: 20px !important;
+}
+
+#serial-tools.collapsed .collapse {
+	display: none !important;
 }
 
 
@@ -61,6 +84,46 @@ body {
 
 .toggle-button:hover {
 	background: rgba(228, 231, 242, 0.4);
+}
+
+/* 拖拽调整手柄样式 */
+.resize-handle {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 4px;
+	background-color: transparent;
+	cursor: col-resize;
+	z-index: 10;
+	transition: background-color 0.2s ease;
+}
+
+/* 左侧面板的拖拽手柄在右边 */
+#connection-options .resize-handle {
+	right: 0;
+}
+
+/* 右侧面板的拖拽手柄在左边 */
+#serial-tools .resize-handle {
+	left: 0;
+}
+
+.resize-handle:hover {
+	background-color: #007bff;
+}
+
+.resize-handle.active {
+	background-color: #0056b3;
+}
+
+/* 拖拽时的全局样式 */
+body.resizing {
+	cursor: col-resize !important;
+	user-select: none;
+}
+
+body.resizing * {
+	cursor: col-resize !important;
 }
 
 #serial-tools {

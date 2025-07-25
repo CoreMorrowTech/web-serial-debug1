@@ -1029,10 +1029,85 @@ console.log("✅ 综合测试完成!");`
 	//左右折叠
 	document.querySelectorAll('.toggle-button').forEach((element) => {
 		element.addEventListener('click', (e) => {
-			e.currentTarget.parentElement.querySelector('.collapse').classList.toggle('show')
-			e.currentTarget.querySelector('i').classList.toggle('bi-chevron-compact-right')
-			e.currentTarget.querySelector('i').classList.toggle('bi-chevron-compact-left')
+			const panel = e.currentTarget.parentElement
+			const collapseElement = panel.querySelector('.collapse')
+			const icon = e.currentTarget.querySelector('i')
+			
+			// 切换面板折叠状态
+			panel.classList.toggle('collapsed')
+			collapseElement.classList.toggle('show')
+			
+			// 更新图标方向
+			if (panel.classList.contains('collapsed')) {
+				// 面板已折叠
+				if (panel.id === 'connection-options') {
+					// 左侧面板折叠时显示向右箭头
+					icon.className = 'bi bi-chevron-compact-right'
+				} else {
+					// 右侧面板折叠时显示向左箭头
+					icon.className = 'bi bi-chevron-compact-left'
+				}
+			} else {
+				// 面板已展开
+				if (panel.id === 'connection-options') {
+					// 左侧面板展开时显示向左箭头
+					icon.className = 'bi bi-chevron-compact-left'
+				} else {
+					// 右侧面板展开时显示向右箭头
+					icon.className = 'bi bi-chevron-compact-right'
+				}
+			}
+			
+			// 保存折叠状态到localStorage
+			savePanelState(panel.id, panel.classList.contains('collapsed'))
 		})
+	})
+	
+	// 保存面板折叠状态
+	function savePanelState(panelId, isCollapsed) {
+		try {
+			const panelStates = JSON.parse(localStorage.getItem('panelStates') || '{}')
+			panelStates[panelId] = isCollapsed
+			localStorage.setItem('panelStates', JSON.stringify(panelStates))
+		} catch (e) {
+			console.warn('无法保存面板状态:', e)
+		}
+	}
+	
+	// 恢复面板折叠状态
+	function restorePanelStates() {
+		try {
+			const panelStates = JSON.parse(localStorage.getItem('panelStates') || '{}')
+			
+			Object.keys(panelStates).forEach(panelId => {
+				const panel = document.getElementById(panelId)
+				const isCollapsed = panelStates[panelId]
+				
+				if (panel && isCollapsed) {
+					const collapseElement = panel.querySelector('.collapse')
+					const toggleButton = panel.querySelector('.toggle-button')
+					const icon = toggleButton.querySelector('i')
+					
+					// 应用折叠状态
+					panel.classList.add('collapsed')
+					collapseElement.classList.remove('show')
+					
+					// 设置正确的图标
+					if (panelId === 'connection-options') {
+						icon.className = 'bi bi-chevron-compact-right'
+					} else {
+						icon.className = 'bi bi-chevron-compact-left'
+					}
+				}
+			})
+		} catch (e) {
+			console.warn('无法恢复面板状态:', e)
+		}
+	}
+	
+	// 页面加载完成后恢复面板状态
+	document.addEventListener('DOMContentLoaded', () => {
+		setTimeout(restorePanelStates, 100) // 延迟执行确保DOM完全加载
 	})
 
 	//设置名称
