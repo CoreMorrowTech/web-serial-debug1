@@ -227,6 +227,36 @@ function addBlock(name, type) {
                         <input type="text" class="form-control form-control-sm" placeholder="回复内容" data-param="customReply">
                     </div>
                     <div class="mt-2">
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="form-label text-white small">监听模式:</label>
+                                <select class="form-control form-control-sm" data-param="listenMode">
+                                    <option value="continuous">持续监听</option>
+                                    <option value="once">监听一次</option>
+                                    <option value="timed">定时监听</option>
+                                </select>
+                            </div>
+                            <div class="col-6" id="timeout-setting-${blockId}" style="display: none;">
+                                <label class="form-label text-white small">超时时间(秒):</label>
+                                <input type="number" class="form-control form-control-sm" value="30" data-param="timeout" min="1" max="3600">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label text-white small mb-0">监听状态:</label>
+                            <div>
+                                <button class="btn btn-sm btn-success" onclick="startListening('${blockId}')" id="start-btn-${blockId}">
+                                    <i class="bi bi-play"></i> 开始
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="stopListening('${blockId}')" id="stop-btn-${blockId}" style="display: none;">
+                                    <i class="bi bi-stop"></i> 停止
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listen-status-${blockId}" class="small text-muted mt-1">未开始监听</div>
+                    </div>
+                    <div class="mt-2">
                         <label class="form-label text-white small">最近接收:</label>
                         <div id="receive-display-${blockId}" class="bg-dark text-light p-2 rounded small" style="min-height: 40px; max-height: 80px; overflow-y: auto; font-family: monospace;">
                             <span class="text-muted">等待数据...</span>
@@ -256,6 +286,36 @@ function addBlock(name, type) {
                         <input type="text" class="form-control form-control-sm" placeholder="回复内容" data-param="customReply">
                     </div>
                     <div class="mt-2">
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="form-label text-white small">监听模式:</label>
+                                <select class="form-control form-control-sm" data-param="listenMode">
+                                    <option value="continuous">持续监听</option>
+                                    <option value="once">监听一次</option>
+                                    <option value="timed">定时监听</option>
+                                </select>
+                            </div>
+                            <div class="col-6" id="timeout-setting-${blockId}" style="display: none;">
+                                <label class="form-label text-white small">超时时间(秒):</label>
+                                <input type="number" class="form-control form-control-sm" value="30" data-param="timeout" min="1" max="3600">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label text-white small mb-0">监听状态:</label>
+                            <div>
+                                <button class="btn btn-sm btn-success" onclick="startListening('${blockId}')" id="start-btn-${blockId}">
+                                    <i class="bi bi-play"></i> 开始
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="stopListening('${blockId}')" id="stop-btn-${blockId}" style="display: none;">
+                                    <i class="bi bi-stop"></i> 停止
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listen-status-${blockId}" class="small text-muted mt-1">未开始监听</div>
+                    </div>
+                    <div class="mt-2">
                         <label class="form-label text-white small">最近接收:</label>
                         <div id="receive-display-${blockId}" class="bg-dark text-light p-2 rounded small" style="min-height: 40px; max-height: 80px; overflow-y: auto; font-family: monospace;">
                             <span class="text-muted">等待数据...</span>
@@ -283,6 +343,36 @@ function addBlock(name, type) {
                     <div class="mt-1" id="custom-handler-${blockId}" style="display: none;">
                         <label class="form-label text-dark small">自定义回复:</label>
                         <input type="text" class="form-control form-control-sm" placeholder="回复内容" data-param="customReply">
+                    </div>
+                    <div class="mt-2">
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="form-label text-dark small">监听模式:</label>
+                                <select class="form-control form-control-sm" data-param="listenMode">
+                                    <option value="continuous">持续监听</option>
+                                    <option value="once">监听一次</option>
+                                    <option value="timed">定时监听</option>
+                                </select>
+                            </div>
+                            <div class="col-6" id="timeout-setting-${blockId}" style="display: none;">
+                                <label class="form-label text-dark small">超时时间(秒):</label>
+                                <input type="number" class="form-control form-control-sm" value="30" data-param="timeout" min="1" max="3600">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label text-dark small mb-0">监听状态:</label>
+                            <div>
+                                <button class="btn btn-sm btn-success" onclick="startListening('${blockId}')" id="start-btn-${blockId}">
+                                    <i class="bi bi-play"></i> 开始
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="stopListening('${blockId}')" id="stop-btn-${blockId}" style="display: none;">
+                                    <i class="bi bi-stop"></i> 停止
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listen-status-${blockId}" class="small text-muted mt-1">未开始监听</div>
                     </div>
                     <div class="mt-2">
                         <label class="form-label text-dark small">最近接收:</label>
@@ -496,9 +586,24 @@ function generateCode() {
                 break;
 
             case 'serial_receive':
-                code += `// 串口接收处理\n`;
+                code += `// 串口接收处理 (${params.listenMode || 'continuous'}模式)\n`;
+                if (params.listenMode === 'timed') {
+                    code += `let serialReceiveTimeout = setTimeout(() => {\n`;
+                    code += `    console.log('串口监听超时');\n`;
+                    code += `}, ${(params.timeout || 30) * 1000});\n\n`;
+                }
+                if (params.listenMode === 'once') {
+                    code += `let serialReceiveOnce = false;\n`;
+                }
                 code += `addEventListener('message', function({data}) {\n`;
                 code += `    if(data.type == 'uart_receive') {\n`;
+                if (params.listenMode === 'once') {
+                    code += `        if(serialReceiveOnce) return;\n`;
+                    code += `        serialReceiveOnce = true;\n`;
+                }
+                if (params.listenMode === 'timed') {
+                    code += `        clearTimeout(serialReceiveTimeout);\n`;
+                }
                 if (params.action === 'log') {
                     code += `        console.log('串口收到数据:', data.data);\n`;
                 } else if (params.action === 'echo') {
@@ -511,9 +616,24 @@ function generateCode() {
                 break;
 
             case 'udp_receive':
-                code += `// UDP接收处理\n`;
+                code += `// UDP接收处理 (${params.listenMode || 'continuous'}模式)\n`;
+                if (params.listenMode === 'timed') {
+                    code += `let udpReceiveTimeout = setTimeout(() => {\n`;
+                    code += `    console.log('UDP监听超时');\n`;
+                    code += `}, ${(params.timeout || 30) * 1000});\n\n`;
+                }
+                if (params.listenMode === 'once') {
+                    code += `let udpReceiveOnce = false;\n`;
+                }
                 code += `addEventListener('message', function({data}) {\n`;
                 code += `    if(data.type == 'udp_receive') {\n`;
+                if (params.listenMode === 'once') {
+                    code += `        if(udpReceiveOnce) return;\n`;
+                    code += `        udpReceiveOnce = true;\n`;
+                }
+                if (params.listenMode === 'timed') {
+                    code += `        clearTimeout(udpReceiveTimeout);\n`;
+                }
                 if (params.action === 'log') {
                     code += `        console.log('UDP收到数据:', data.data);\n`;
                 } else if (params.action === 'echo') {
@@ -526,9 +646,24 @@ function generateCode() {
                 break;
 
             case 'tcp_receive':
-                code += `// TCP接收处理\n`;
+                code += `// TCP接收处理 (${params.listenMode || 'continuous'}模式)\n`;
+                if (params.listenMode === 'timed') {
+                    code += `let tcpReceiveTimeout = setTimeout(() => {\n`;
+                    code += `    console.log('TCP监听超时');\n`;
+                    code += `}, ${(params.timeout || 30) * 1000});\n\n`;
+                }
+                if (params.listenMode === 'once') {
+                    code += `let tcpReceiveOnce = false;\n`;
+                }
                 code += `addEventListener('message', function({data}) {\n`;
                 code += `    if(data.type == 'tcp_receive') {\n`;
+                if (params.listenMode === 'once') {
+                    code += `        if(tcpReceiveOnce) return;\n`;
+                    code += `        tcpReceiveOnce = true;\n`;
+                }
+                if (params.listenMode === 'timed') {
+                    code += `        clearTimeout(tcpReceiveTimeout);\n`;
+                }
                 if (params.action === 'log') {
                     code += `        console.log('TCP收到数据:', data.data);\n`;
                 } else if (params.action === 'echo') {
@@ -692,4 +827,207 @@ window.blocklyReceiveDisplay = {
     clearReceiveBlockDisplay: clearReceiveBlockDisplay
 };
 
-console.log('积木编程函数文件已加载');
+console.log('积木编程函数文件已加载');//
+监听状态管理
+const listeningBlocks = new Map(); // 存储正在监听的积木状态
+
+// 为接收积木添加监听模式选择事件监听器
+function setupReceiveBlockListeners(blockId) {
+    const block = document.getElementById(blockId);
+    if (!block) return;
+
+    // 监听模式选择事件
+    const listenModeSelect = block.querySelector('select[data-param="listenMode"]');
+    const timeoutSetting = block.querySelector(`#timeout-setting-${blockId}`);
+
+    if (listenModeSelect && timeoutSetting) {
+        listenModeSelect.addEventListener('change', function () {
+            if (this.value === 'timed') {
+                timeoutSetting.style.display = 'block';
+            } else {
+                timeoutSetting.style.display = 'none';
+            }
+        });
+    }
+}
+
+// 开始监听
+function startListening(blockId) {
+    const block = document.getElementById(blockId);
+    if (!block) return;
+
+    const blockType = block.dataset.blockType;
+    const startBtn = document.getElementById(`start-btn-${blockId}`);
+    const stopBtn = document.getElementById(`stop-btn-${blockId}`);
+    const statusDiv = document.getElementById(`listen-status-${blockId}`);
+
+    // 获取监听参数
+    const listenModeSelect = block.querySelector('select[data-param="listenMode"]');
+    const timeoutInput = block.querySelector('input[data-param="timeout"]');
+
+    const listenMode = listenModeSelect ? listenModeSelect.value : 'continuous';
+    const timeout = timeoutInput ? parseInt(timeoutInput.value) * 1000 : 30000; // 转换为毫秒
+
+    // 更新UI状态
+    startBtn.style.display = 'none';
+    stopBtn.style.display = 'inline-block';
+
+    // 创建监听状态对象
+    const listeningState = {
+        blockId: blockId,
+        blockType: blockType,
+        mode: listenMode,
+        timeout: timeout,
+        startTime: Date.now(),
+        receivedCount: 0,
+        timeoutTimer: null,
+        active: true
+    };
+
+    // 根据监听模式设置状态显示和定时器
+    switch (listenMode) {
+        case 'continuous':
+            statusDiv.innerHTML = '<span class="text-success">🟢 持续监听中...</span>';
+            break;
+
+        case 'once':
+            statusDiv.innerHTML = '<span class="text-warning">🟡 等待接收一次数据...</span>';
+            break;
+
+        case 'timed':
+            statusDiv.innerHTML = `<span class="text-info">🔵 定时监听中 (${timeout / 1000}秒)</span>`;
+            // 设置超时定时器
+            listeningState.timeoutTimer = setTimeout(() => {
+                stopListening(blockId, '监听超时');
+            }, timeout);
+            break;
+    }
+
+    // 存储监听状态
+    listeningBlocks.set(blockId, listeningState);
+
+    if (window.addLogErr) {
+        window.addLogErr(`🎧 ${blockType} 积木 ${blockId} 开始${getModeText(listenMode)}监听`);
+    }
+}
+
+// 停止监听
+function stopListening(blockId, reason = '手动停止') {
+    const listeningState = listeningBlocks.get(blockId);
+    if (!listeningState) return;
+
+    const startBtn = document.getElementById(`start-btn-${blockId}`);
+    const stopBtn = document.getElementById(`stop-btn-${blockId}`);
+    const statusDiv = document.getElementById(`listen-status-${blockId}`);
+
+    // 清除定时器
+    if (listeningState.timeoutTimer) {
+        clearTimeout(listeningState.timeoutTimer);
+    }
+
+    // 更新UI状态
+    if (startBtn && stopBtn && statusDiv) {
+        startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
+
+        const duration = Math.round((Date.now() - listeningState.startTime) / 1000);
+        statusDiv.innerHTML = `<span class="text-secondary">⚫ 已停止 (${reason}, 运行${duration}秒, 收到${listeningState.receivedCount}条)</span>`;
+    }
+
+    // 标记为非活跃状态
+    listeningState.active = false;
+
+    if (window.addLogErr) {
+        window.addLogErr(`🛑 ${listeningState.blockType} 积木 ${blockId} 停止监听: ${reason}`);
+    }
+
+    // 从监听列表中移除
+    listeningBlocks.delete(blockId);
+}
+
+// 获取监听模式文本
+function getModeText(mode) {
+    switch (mode) {
+        case 'continuous': return '持续';
+        case 'once': return '单次';
+        case 'timed': return '定时';
+        default: return '';
+    }
+}
+
+// 检查积木是否正在监听
+function isBlockListening(blockId) {
+    const state = listeningBlocks.get(blockId);
+    return state && state.active;
+}
+
+// 处理接收到的数据（需要在数据接收时调用）
+function handleReceiveData(blockType, data, remoteInfo = '') {
+    // 更新所有对应类型的接收积木显示
+    updateReceiveBlockDisplay(blockType, data, remoteInfo);
+
+    // 检查监听状态并处理
+    listeningBlocks.forEach((state, blockId) => {
+        if (state.blockType === blockType && state.active) {
+            state.receivedCount++;
+
+            // 根据监听模式决定是否停止监听
+            if (state.mode === 'once') {
+                stopListening(blockId, '已接收一次数据');
+            } else {
+                // 更新状态显示中的接收计数
+                const statusDiv = document.getElementById(`listen-status-${state.blockId}`);
+                if (statusDiv && state.mode === 'continuous') {
+                    const duration = Math.round((Date.now() - state.startTime) / 1000);
+                    statusDiv.innerHTML = `<span class="text-success">🟢 持续监听中... (${duration}秒, 已收到${state.receivedCount}条)</span>`;
+                } else if (statusDiv && state.mode === 'timed') {
+                    const remaining = Math.max(0, Math.round((state.timeout - (Date.now() - state.startTime)) / 1000));
+                    statusDiv.innerHTML = `<span class="text-info">🔵 定时监听中 (剩余${remaining}秒, 已收到${state.receivedCount}条)</span>`;
+                }
+            }
+        }
+    });
+}
+
+// 修改原有的updateReceiveBlockDisplay函数，使其调用新的处理函数
+const originalUpdateReceiveBlockDisplay = updateReceiveBlockDisplay;
+updateReceiveBlockDisplay = function (blockType, data, remoteInfo = '') {
+    // 调用原有的显示更新逻辑
+    originalUpdateReceiveBlockDisplay(blockType, data, remoteInfo);
+
+    // 处理监听状态
+    handleReceiveData(blockType, data, remoteInfo);
+};
+
+// 在添加接收积木时设置监听器
+const originalAddBlock = addBlock;
+addBlock = function (name, type) {
+    originalAddBlock(name, type);
+
+    // 为接收积木设置额外的监听器
+    if (type.includes('_receive')) {
+        setTimeout(() => {
+            setupReceiveBlockListeners(`block_${blockCounter}`);
+        }, 100);
+    }
+};
+
+// 在删除积木时清理监听状态
+const originalRemoveBlock = removeBlock;
+removeBlock = function (blockId) {
+    // 如果是正在监听的积木，先停止监听
+    if (listeningBlocks.has(blockId)) {
+        stopListening(blockId, '积木被删除');
+    }
+
+    originalRemoveBlock(blockId);
+};
+
+// 导出监听控制函数供全局使用
+window.blocklyListenControl = {
+    startListening: startListening,
+    stopListening: stopListening,
+    isBlockListening: isBlockListening,
+    handleReceiveData: handleReceiveData,
+    listeningBlocks: listeningBlocks
+};
